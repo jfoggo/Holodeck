@@ -29,7 +29,8 @@ if ASSETS_VERSION > "2023_09_23":
 else:
     THOR_COMMIT_ID = "3213d486cd09bcbafce33561997355983bdf8d1a"
 
-# LLM_MODEL_NAME = "gpt-4-1106-preview"
-LLM_MODEL_NAME = "gpt-4o-2024-05-13"
+# LLM_MODEL_NAME_OPENAI = "gpt-4-1106-preview"
+LLM_MODEL_NAME_OPENAI = "gpt-4o-2024-05-13"
+LLM_MODEL_NAME_GOOGLEAI = "gemini-2.0-flash"
 
 DEBUGGING = os.environ.get("DEBUGGING", "0").lower() in ["1", "true", "True", "t", "T"]

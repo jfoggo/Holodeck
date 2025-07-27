@@ -7,14 +7,15 @@ import re
 import compress_json
 import numpy as np
 from colorama import Fore
-from langchain import PromptTemplate, OpenAI
+from langchain_core.prompts.prompt import PromptTemplate
 
 import ai2holodeck.generation.prompts as prompts
 from ai2holodeck.constants import HOLODECK_BASE_DATA_DIR
+from ai2holodeck.generation.llms import LLM
 
 
 class WindowGenerator:
-    def __init__(self, llm: OpenAI):
+    def __init__(self, llm: LLM):
         self.json_template = {
             "assetId": None,
             "id": None,

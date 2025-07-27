@@ -108,6 +108,17 @@ def generate_variants(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
+        "--provider",
+        help="Choose between different LLM providers",
+        choices=["openai", "googleai"],
+        default="openai",
+    )
+    parser.add_argument(
+        "--model_name",
+        help="Choose a specific model from OpenAI or GoogleAI",
+        default=None,
+    )
+    parser.add_argument(
         "--mode",
         help="Mode to run in (generate_single_scene, generate_multi_scenes or generate_variants).",
         default="generate_single_scene",
@@ -124,6 +135,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--original_scene",
         help="Original scene to generate variants from.",
+        default=None,
+    )
+    parser.add_argument(
+        "--google_api_key",
+        help="Google API key. If none given, will attempt to read this from the GOOGLE_API_KEY env variable.",
         default=None,
     )
     parser.add_argument(
@@ -186,12 +202,17 @@ if __name__ == "__main__":
 
     if args.openai_org is None:
         args.openai_org = os.environ.get("OPENAI_ORG")
+    
+    if args.google_api_key is None:
+        args.google_api_key = os.environ.get("GOOGLE_API_KEY")
 
     args.model = Holodeck(
-        openai_api_key=args.openai_api_key,
+        provider=args.provider,
+        api_key=args.openai_api_key if args.provider == "openai" else args.google_api_key,
         openai_org=args.openai_org,
         objaverse_asset_dir=OBJATHOR_ASSETS_DIR,
         single_room=ast.literal_eval(args.single_room),
+        model_name=args.model_name,
     )
 
     if args.used_assets != [] and args.used_assets.endswith(".txt"):

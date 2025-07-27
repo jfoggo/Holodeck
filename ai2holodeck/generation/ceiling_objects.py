@@ -4,16 +4,17 @@ import re
 import torch
 import torch.nn.functional as F
 from colorama import Fore
-from langchain import PromptTemplate, OpenAI
+from langchain_core.prompts.prompt import PromptTemplate
 from shapely.geometry import Polygon
 
 import ai2holodeck.generation.prompts as prompts
 from ai2holodeck.generation.objaverse_retriever import ObjathorRetriever
 from ai2holodeck.generation.utils import get_bbox_dims, get_annotations
+from ai2holodeck.generation.llms import LLM
 
 
 class CeilingObjectGenerator:
-    def __init__(self, object_retriever: ObjathorRetriever, llm: OpenAI):
+    def __init__(self, object_retriever: ObjathorRetriever, llm: LLM):
         self.json_template = {
             "assetId": None,
             "id": None,

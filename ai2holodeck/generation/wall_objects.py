@@ -6,17 +6,18 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from langchain import PromptTemplate, OpenAI
+from langchain_core.prompts.prompt import PromptTemplate
 from shapely.geometry import Polygon, box, Point, LineString
 from shapely.ops import substring
 
 import ai2holodeck.generation.prompts as prompts
 from ai2holodeck.generation.objaverse_retriever import ObjathorRetriever
 from ai2holodeck.generation.utils import get_bbox_dims
+from ai2holodeck.generation.llms import LLM
 
 
 class WallObjectGenerator:
-    def __init__(self, object_retriever: ObjathorRetriever, llm: OpenAI):
+    def __init__(self, object_retriever: ObjathorRetriever, llm: LLM):
         self.json_template = {
             "assetId": None,
             "id": None,
@@ -41,6 +42,7 @@ class WallObjectGenerator:
         self.grid_size = 25
         self.default_height = 150
         self.constraint_type = "llm"
+        self.multiprocessing = False
 
     def generate_wall_objects(self, scene, use_constraint=True):
         doors = scene["doors"]
@@ -64,10 +66,14 @@ class WallObjectGenerator:
             )
             for room in scene["rooms"]
         ]
-        pool = multiprocessing.Pool(processes=4)
-        all_placements = pool.map(self.generate_wall_objects_per_room, packed_args)
-        pool.close()
-        pool.join()
+
+        if self.multiprocessing:
+            pool = multiprocessing.Pool(processes=4)
+            all_placements = pool.map(self.generate_wall_objects_per_room, packed_args)
+            pool.close()
+            pool.join()
+        else:
+            all_placements = [self.generate_wall_objects_per_room(args) for args in packed_args]
 
         for placements in all_placements:
             wall_objects += placements

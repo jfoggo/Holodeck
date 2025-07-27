@@ -1,10 +1,9 @@
 import datetime
 import os
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, Literal
 
 import compress_json
 import open_clip
-from langchain.llms import OpenAI
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
@@ -16,7 +15,6 @@ from ai2holodeck.constants import (
     OBJATHOR_ANNOTATIONS_PATH,
     HOLODECK_THOR_FEATURES_DIR,
     HOLODECK_THOR_ANNOTATIONS_PATH,
-    LLM_MODEL_NAME,
     ABS_PATH_OF_HOLODECK,
 )
 from ai2holodeck.generation.ceiling_objects import CeilingObjectGenerator
@@ -33,6 +31,7 @@ from ai2holodeck.generation.utils import get_top_down_frame, room_video
 from ai2holodeck.generation.wall_objects import WallObjectGenerator
 from ai2holodeck.generation.walls import WallGenerator
 from ai2holodeck.generation.windows import WindowGenerator
+from ai2holodeck.generation.llms import LLM
 
 
 def confirm_paths_exist():
@@ -56,10 +55,12 @@ def confirm_paths_exist():
 class Holodeck:
     def __init__(
         self,
-        openai_api_key: str,
+        api_key: str,
         openai_org: Optional[str],
         objaverse_asset_dir: str,
         single_room,
+        provider: Literal["openai", "googleai"] = "openai",
+        model_name: Optional[str] = None,
     ):
         confirm_paths_exist()
 
@@ -67,10 +68,11 @@ class Holodeck:
             os.environ["OPENAI_ORG"] = openai_org
 
         # initialize llm
-        self.llm = OpenAI(
-            model_name=LLM_MODEL_NAME,
+        self.llm = LLM(
+            provider=provider,
+            api_key=api_key,
+            model_name=model_name,
             max_tokens=2048,
-            openai_api_key=openai_api_key,
         )
 
         # initialize CLIP
