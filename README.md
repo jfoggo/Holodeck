@@ -38,13 +38,43 @@ python -m objathor.dataset.download_features --version 2023_09_23
 by default these will save to `~/.objathor-assets/...`, you can change this director by specifying the `--path` argument.  If you change the `--path`, you'll need to set the `OBJAVERSE_ASSETS_DIR` environment variable to the path where the assets are stored when you use Holodeck.
 
 ## Usage
-You can use the following command to generate a new environment.
-```
-python holodeck/main.py --query "a living room" --openai_api_key <OPENAI_API_KEY>
+You can use the following command to generate a new environment (via **OpenAI - recommended**).
+```sh
+# Set python path (only once)
+export PYTHONPATH="$PYTHONPATH:${cwd}"
+
+# Provide api token via env (or directly via cmd-line flag, see below)
+export OPENAI_API_TOKEN=<TOKEN>
+
+# Generate environment (via OpenAI)
+python ai2holodeck/main.py --query "a living room" --openai_api_key <OPENAI_API_KEY>
 ```
 Our system uses `gpt-4o-2024-05-13`, **so please ensure you have access to it.**
 
 **Note:** To yield better layouts, use `DFS` as the solver. If you pull the repo before `12/28/2023`, you must set the [argument](https://github.com/allenai/Holodeck/blob/386b0a868def29175436dc3b1ed85b6309eb3cad/main.py#L78) `--use_milp` to `False` to use `DFS`.
+
+_________________
+
+Alternatively, you can try to generate environments via models with similar capabillities from **GoogleAI - experimental**:
+- Use _provider_ flag: `--provider=googleai`
+- Use _token_ flag: `--google_api_token=<TOKEN>`
+```sh
+# Set python path (only once)
+export PYTHONPATH="$PYTHONPATH:${cwd}"
+
+# Provide api token via env (or directly via cmd-line flag, see below)
+export GOOGLE_API_TOKEN=<TOKEN>
+
+# Generate environment (via GoogleAI)
+python ai2holodeck/main.py --query "a living room" --provider "googleai" --google_api_key <GOOGLE_API_KEY>
+```
+
+### Supported Models:
+Model | Provider | Details
+--|--|--
+`gpt-4o-2024-05-13` | OpenAI | Default Model for OpenAI - **Recommended**
+`gemini-2.0-flash` | GoogleAI | Default Model for GoogleAI - **Experimental**
+any other models | OpenAI or GoogleAI | Try other models via `--model_name=<MODEL>` flag _at your own risk_ 😉
 
 ## Load the scene in Unity
 1. Install [Unity](https://unity.com/download) and select the editor version `2020.3.25f1`.
